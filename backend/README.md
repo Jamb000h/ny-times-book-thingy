@@ -12,3 +12,8 @@ Before running create a `.env` in the root folder and fill the following informa
 ### Commands
 
 `dev` runs the server in watch mode (nodemon + ts-node) for a nice devX
+
+## TODO
+
+- Caching support (redis)
+- Better error handling
