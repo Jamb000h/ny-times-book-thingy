@@ -1,8 +1,10 @@
 import express from "express";
+import cors from "cors";
 import config from "config";
 import bestsellersRouter from "routes/bestsellersRoutes";
 
 const app = express();
+app.use(cors());
 
 app.use("/api/bestsellers", bestsellersRouter);
 
