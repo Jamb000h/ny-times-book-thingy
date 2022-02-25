@@ -1,10 +1,10 @@
 import express from "express";
 import config from "config";
-import booksRouter from "routes/booksRoutes";
+import bestsellersRouter from "routes/bestsellersRoutes";
 
 const app = express();
 
-app.use("/books", booksRouter);
+app.use("/api/bestsellers", bestsellersRouter);
 
 app.get("/", (_req, res) => res.status(404).send("Not found"));
 
