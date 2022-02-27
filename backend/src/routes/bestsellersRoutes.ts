@@ -1,11 +1,18 @@
 import { Request, Router } from "express";
-import booksService from "services/booksService";
+import BooksService from "services/BooksService";
+import areValidBestsellerLists from "schemas/external/BookService/BestsellerList";
+import areValidBooks from "schemas/external/BookService/Book";
+import areValidReviews from "schemas/external/BookService/Review";
 
+const booksService = new BooksService();
 const router = Router();
 
 router.get("/lists", async (_req, res) => {
   try {
-    res.json(await booksService.getBestsellerLists());
+    const bestsellerLists = await booksService.getBestsellerLists();
+    if (areValidBestsellerLists(bestsellerLists)) {
+      res.json(bestsellerLists);
+    }
   } catch (e) {
     // TODO: Better error handling
     res.status(500).send(e);
@@ -16,27 +23,23 @@ router.get("/list/:listName", async (req: Request, res) => {
   const listName = req.params.listName;
 
   if (!listName) {
-    res.status(400).send("Missing listName query param");
+    return res.status(400).send("Missing listName query param");
   }
 
   try {
-    // Validate list name against lists from API
-    const lists = await booksService.getBestsellerLists();
-    const isValidListName = lists.some((list) => list.list_name === listName);
-
-    if (!isValidListName) {
-      res.status(400).send("Invalid listName query param");
-    }
-
-    // Get books for list
     const books = await booksService.getBooksForBestsellerList(listName);
-    const top10BestsellersForList = books
-      .sort((book1, book2) => book1.rank - book2.rank)
-      .slice(0, 10);
+    if (areValidBooks(books)) {
+      // Only top 10 is interesting
+      const top10BestsellersForList = books
+        .sort((book1, book2) => book1.rank - book2.rank)
+        .slice(0, 10);
 
-    res.json(top10BestsellersForList);
+      return res.json(top10BestsellersForList);
+    } else {
+      return res.status(400).send("Invalid books");
+    }
   } catch (e) {
-    res.status(400).send((e as Error).message);
+    return res.status(400).send((e as Error).message);
   }
 });
 
@@ -44,15 +47,19 @@ router.get("/reviews/:isbn", async (req: Request, res) => {
   const isbn = req.params.isbn;
 
   if (!isbn) {
-    res.status(400).send("Missing isbn query param");
+    return res.status(400).send("Missing isbn query param");
   }
 
   try {
     const reviews = await booksService.getReviewsForBook(isbn);
 
-    res.json(reviews);
+    if (areValidReviews(reviews)) {
+      return res.json(reviews);
+    } else {
+      return res.status(400).send("Invalid reviews");
+    }
   } catch (e) {
-    res.status(500).send(e);
+    return res.status(500).send(e);
   }
 });
 
