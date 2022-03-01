@@ -4,7 +4,7 @@
 import axios, { AxiosInstance } from "axios";
 import config from "config";
 
-class BooksService {
+class BestsellersService {
   private agent: AxiosInstance;
 
   constructor() {
@@ -18,12 +18,12 @@ class BooksService {
     this.agent = agent;
   }
 
-  async getBestsellerLists() {
+  async getBestsellerListNames() {
     const response = await this.agent.get("/lists/names.json");
     return response.data.results;
   }
 
-  async getBooksForBestsellerList(listName: string) {
+  async getBestsellerList(listName: string) {
     const response = await this.agent.get(`/lists.json`, {
       params: { list: listName },
     });
@@ -31,7 +31,7 @@ class BooksService {
     return response.data.results;
   }
 
-  async getReviewsForBook(isbn: string) {
+  async getReviews(isbn: string) {
     const response = await this.agent.get(`/reviews.json`, {
       params: {
         isbn,
@@ -42,4 +42,4 @@ class BooksService {
   }
 }
 
-export default BooksService;
+export default BestsellersService;

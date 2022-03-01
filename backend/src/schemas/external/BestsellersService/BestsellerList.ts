@@ -3,15 +3,19 @@ const ajv = new Ajv();
 
 interface Book {
   rank: number;
-  book_details: BookDetails;
+  list_name: string;
+  book_details: BookDetails[];
+  reviews: Array<{ [key: string]: any }>; // TODO
 }
 
-interface BookDetails {
+export interface BookDetails {
   title: string;
   author: string;
   primary_isbn13: string;
   primary_isbn10: string;
 }
+
+interface BestsellerList extends Array<Book> {}
 
 const bookDetailsSchema: JSONSchemaType<BookDetails> = {
   type: "object",
@@ -29,13 +33,24 @@ const bookSchema: JSONSchemaType<Book> = {
   type: "object",
   properties: {
     rank: { type: "number" },
-    book_details: bookDetailsSchema,
+    list_name: { type: "string" },
+    book_details: {
+      type: "array",
+      items: bookDetailsSchema,
+    },
+    reviews: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {},
+      },
+    },
   },
-  required: ["rank", "book_details"],
+  required: ["rank", "list_name", "book_details", "reviews"],
   additionalProperties: true,
 };
 
-const schema: JSONSchemaType<Book[]> = {
+const schema: JSONSchemaType<BestsellerList> = {
   type: "array",
   items: bookSchema,
 };
