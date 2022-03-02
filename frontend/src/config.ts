@@ -1,3 +1,4 @@
+// This would ideally come from .env
 export const config = {
   apis: {
     bestsellers: {

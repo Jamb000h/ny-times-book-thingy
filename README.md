@@ -11,7 +11,7 @@ A simple application that allows checking different top 10 lists from NY Times B
 
 ### Commands
 
-Run the whole application from root folder with `docker-compose up`, which spins up backend, frontend and Redis cache.
+Run the whole application from root folder with `docker-compose up`, which spins up backend and frontend.
 
 ## Built with
 
@@ -26,6 +26,6 @@ Run the whole application from root folder with `docker-compose up`, which spins
 - React
 - TypeScript
 
-### Cache for API responses
+### TODO: Cache for API responses
 
 - Redis

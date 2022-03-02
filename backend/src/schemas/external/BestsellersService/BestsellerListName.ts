@@ -9,7 +9,7 @@ interface BestsellerListName {
   updated: string;
 }
 
-interface BestsellerListNames extends Array<BestsellerListName> {}
+export interface BestsellerListNames extends Array<BestsellerListName> {}
 
 const bestsellerListNameSchema: JSONSchemaType<BestsellerListName> = {
   type: "object",

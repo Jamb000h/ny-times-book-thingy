@@ -6,7 +6,7 @@ Runs a simple express backend via ts-node.
 
 Before running create a `.env` in the root folder and fill the following information:
 
-- PORT (defaults to 3000)
+- PORT (defaults to 3001)
 - NYTIMES_BOOKS_API_KEY=\<your api key here\>
 
 ### Commands

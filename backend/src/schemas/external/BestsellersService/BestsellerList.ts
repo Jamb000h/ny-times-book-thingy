@@ -5,7 +5,7 @@ interface Book {
   rank: number;
   list_name: string;
   book_details: BookDetails[];
-  reviews: Array<{ [key: string]: any }>; // TODO
+  reviews: Array<{ [key: string]: any }>;
 }
 
 export interface BookDetails {
@@ -15,7 +15,7 @@ export interface BookDetails {
   primary_isbn10: string;
 }
 
-interface BestsellerList extends Array<Book> {}
+export interface BestsellerList extends Array<Book> {}
 
 const bookDetailsSchema: JSONSchemaType<BookDetails> = {
   type: "object",

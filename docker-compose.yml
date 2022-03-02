@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  backend:
+    container_name: book-api-backend
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+
+  frontend:
+    container_name: books-api-frontend
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    ports:
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    depends_on:
+      - backend

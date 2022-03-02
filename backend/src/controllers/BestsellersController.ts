@@ -1,18 +1,32 @@
 import { Request, Response } from "express";
 import BestsellersService from "services/BestsellersService";
-import areValidBestsellerListNames from "schemas/external/BestsellersService/BestsellerListName";
+import areValidBestsellerListNames, {
+  BestsellerListNames,
+} from "schemas/external/BestsellersService/BestsellerListName";
 import isValidBestsellerList, {
   BookDetails,
 } from "schemas/external/BestsellersService/BestsellerList";
-import areValidReviews from "schemas/external/BestsellersService/Review";
+import areValidReviews, {
+  Reviews,
+} from "schemas/external/BestsellersService/Review";
 
 class BestsellersController {
   private bestsellersService: BestsellersService;
   // TODO: replace these caches with redis
   // TODO: add invalidation mechanism
-  private bestsellerListNamesCache: any[];
-  private bestsellerListCache: { [key: string]: any };
-  private reviewCache: { [key: string]: any } = {};
+  // Idea is about as follows:
+  // - We know from API the update schedule for each bestseller list
+  // - Store request in cache and on subsequent requests
+  //   check if endpoint should have updated
+  //   and if so, fetch from endpoint and update cache
+  // - Problem is that we don't know when this happens actually so
+  //   we may hit the API a lot even though it hasn't updated yet
+  // - Possible solution would be to check every hour or so
+  private bestsellerListNamesCache: BestsellerListNames;
+  private bestsellerListCache: {
+    [key: string]: any;
+  };
+  private reviewCache: { [key: string]: Reviews } = {};
 
   constructor(bestsellersService: BestsellersService) {
     this.bestsellersService = bestsellersService;
@@ -43,7 +57,7 @@ class BestsellersController {
       }
     } catch (e) {
       // TODO: Better error handling :)
-      return res.status(500).send(e);
+      return res.status(500).send("Could not get bestseller list names");
     }
   };
 
@@ -79,14 +93,18 @@ class BestsellersController {
 
         const top10WithReviews = await Promise.all(
           top10BestsellersForList.map(async (book) => {
-            const reviews = await this.getReviews(
-              book.reviews,
-              book.book_details
-            );
-            return {
-              ...book,
-              reviews,
-            };
+            try {
+              const reviews = await this.getReviews(
+                book.reviews,
+                book.book_details
+              );
+              return {
+                ...book,
+                reviews,
+              };
+            } catch {
+              return book;
+            }
           })
         );
 
@@ -97,7 +115,7 @@ class BestsellersController {
         return res.status(400).send("Invalid bestsellerList");
       }
     } catch (e) {
-      return res.status(400).send((e as Error).message);
+      return res.status(500).send("Error when fetching bestseller list");
     }
   };
 
